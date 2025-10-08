@@ -1,0 +1,387 @@
+openapi: 3.0.3
+info:
+  title: YouTube Subtitle Translator API Documentation
+  description: |
+    This document describes the external API integration used by the YouTube Subtitle Translator Chrome extension.
+
+    The extension uses the MyMemory Translation API to provide real-time translation of YouTube subtitles.
+
+    ## API Provider
+    - **Service**: MyMemory Translation API
+    - **Provider**: Translated.net
+    - **Base URL**: https://api.mymemory.translated.net
+    - **Authentication**: None required (free tier)
+    - **Rate Limits**: 
+      - Anonymous usage: 100 requests per day
+      - With email registration: 1000 requests per day
+
+    ## Key Features
+    - Real-time translation from English to 17+ languages
+    - RESTful API design
+    - JSON response format
+    - No authentication required for basic usage
+
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://mymemory.translated.net/doc/
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.mymemory.translated.net
+    description: MyMemory Translation API Production Server
+
+tags:
+  - name: Translation
+    description: Translation operations for subtitle text
+
+paths:
+  /get:
+    get:
+      tags:
+        - Translation
+      summary: Translate text from source language to target language
+      description: |
+        Translates the provided text from source language (English) to the specified target language.
+
+        This endpoint is used by the Chrome extension to translate individual words or phrases
+        from YouTube subtitles when users hover over them.
+
+        **Usage in Extension:**
+        - Triggered on mouseover events on subtitle elements
+        - Source language is always English (`en`)
+        - Target language is user-selected via extension popup
+
+        **Rate Limiting:**
+        - Free tier: 100 requests/day
+        - With email: 1000 requests/day
+        - Exceeding limits returns HTTP 429
+
+      operationId: translateText
+      parameters:
+        - name: q
+          in: query
+          description: The text to translate (word or phrase from subtitle)
+          required: true
+          schema:
+            type: string
+            example: "hello"
+          examples:
+            singleWord:
+              value: "hello"
+              summary: Single word translation
+            phrase:
+              value: "how are you"
+              summary: Phrase translation
+            sentence:
+              value: "This is a beautiful day"
+              summary: Full sentence translation
+
+        - name: langpair
+          in: query
+          description: |
+            Language pair in format "source|target" where:
+            - source: Source language code (always "en" for English in this extension)
+            - target: Target language code (user-selected)
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z]{2}(-[A-Z]{2})?\|[a-z]{2}(-[A-Z]{2})?$'
+            example: "en|fr"
+          examples:
+            french:
+              value: "en|fr"
+              summary: English to French
+            spanish:
+              value: "en|es"
+              summary: English to Spanish
+            sinhala:
+              value: "en|si"
+              summary: English to Sinhala
+            chinese:
+              value: "en|zh-CN"
+              summary: English to Chinese (Simplified)
+
+        - name: de
+          in: query
+          description: Email address for increased rate limit (optional)
+          required: false
+          schema:
+            type: string
+            format: email
+            example: "user@example.com"
+
+        - name: key
+          in: query
+          description: API key for authenticated requests (optional)
+          required: false
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Successful translation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslationResponse"
+              examples:
+                successfulTranslation:
+                  value:
+                    responseData:
+                      translatedText: "bonjour"
+                      match: 1
+                    quotaFinished: false
+                    mtLangSupported: null
+                    responseDetails: ""
+                    responseStatus: 200
+                    responderId: "0"
+                    exception_code: null
+                    matches:
+                      - id: "0"
+                        segment: "hello"
+                        translation: "bonjour"
+                        source: "en-US"
+                        target: "fr-FR"
+                        quality: "74"
+                        reference: null
+                        usage-count: 2
+                        subject: "All"
+                        created-by: "MT!"
+                        last-updated-by: "MT!"
+                        create-date: "2024-01-01"
+                        last-update-date: "2024-01-01"
+                        match: 1
+                  summary: Successful French translation
+
+                phraseTranslation:
+                  value:
+                    responseData:
+                      translatedText: "cómo estás"
+                      match: 0.95
+                    quotaFinished: false
+                    responseStatus: 200
+                  summary: Spanish phrase translation
+
+        "400":
+          description: Bad request - Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missingParameter:
+                  value:
+                    responseData:
+                      translatedText: ""
+                    responseDetails: "INVALID LANGUAGE PAIR SPECIFIED. EXAMPLE: EN|IT"
+                    responseStatus: 400
+                  summary: Missing or invalid language pair
+
+        "403":
+          description: Forbidden - Invalid API key or email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+        "429":
+          description: Too many requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                rateLimitExceeded:
+                  value:
+                    responseData:
+                      translatedText: ""
+                    responseDetails: "QUOTA EXCEEDED"
+                    responseStatus: 429
+                    quotaFinished: true
+                  summary: Daily quota exceeded
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    TranslationResponse:
+      type: object
+      description: Successful translation response object
+      required:
+        - responseData
+        - responseStatus
+      properties:
+        responseData:
+          type: object
+          description: Main translation data
+          required:
+            - translatedText
+          properties:
+            translatedText:
+              type: string
+              description: The translated text in target language
+              example: "bonjour"
+            match:
+              type: number
+              description: Match quality score (0-1)
+              example: 1
+              minimum: 0
+              maximum: 1
+        quotaFinished:
+          type: boolean
+          description: Indicates if daily quota is exhausted
+          example: false
+        mtLangSupported:
+          type: string
+          nullable: true
+          description: Machine translation language support info
+        responseDetails:
+          type: string
+          description: Additional details or error messages
+          example: ""
+        responseStatus:
+          type: integer
+          description: HTTP status code
+          example: 200
+        responderId:
+          type: string
+          description: Identifier of the responding server
+          example: "0"
+        exception_code:
+          type: string
+          nullable: true
+          description: Exception code if any error occurred
+        matches:
+          type: array
+          description: Array of translation matches from translation memory
+          items:
+            $ref: "#/components/schemas/TranslationMatch"
+
+    TranslationMatch:
+      type: object
+      description: Individual translation match from translation memory
+      properties:
+        id:
+          type: string
+          description: Unique match identifier
+        segment:
+          type: string
+          description: Source text segment
+        translation:
+          type: string
+          description: Translated text
+        source:
+          type: string
+          description: Source language locale
+          example: "en-US"
+        target:
+          type: string
+          description: Target language locale
+          example: "fr-FR"
+        quality:
+          type: string
+          description: Translation quality score (0-100)
+          example: "74"
+        reference:
+          type: string
+          nullable: true
+          description: Reference to original translation source
+        usage-count:
+          type: integer
+          description: Number of times this translation has been used
+        subject:
+          type: string
+          description: Subject category of the translation
+          example: "All"
+        created-by:
+          type: string
+          description: Creator of the translation (e.g., "MT!" for machine translation)
+        last-updated-by:
+          type: string
+          description: Last user/system to update this translation
+        create-date:
+          type: string
+          format: date
+          description: Date when translation was created
+        last-update-date:
+          type: string
+          format: date
+          description: Date when translation was last updated
+        match:
+          type: number
+          description: Match confidence score (0-1)
+
+    ErrorResponse:
+      type: object
+      description: Error response object
+      properties:
+        responseData:
+          type: object
+          properties:
+            translatedText:
+              type: string
+              description: Empty string in case of error
+              example: ""
+        responseDetails:
+          type: string
+          description: Error message details
+          example: "QUOTA EXCEEDED"
+        responseStatus:
+          type: integer
+          description: HTTP error status code
+          example: 429
+        quotaFinished:
+          type: boolean
+          description: Indicates if quota is exhausted
+          example: true
+
+  examples:
+    SupportedLanguagePairs:
+      summary: Commonly Used Language Pairs in Extension
+      value:
+        - langpair: "en|fr"
+          description: "English to French"
+        - langpair: "en|es"
+          description: "English to Spanish"
+        - langpair: "en|de"
+          description: "English to German"
+        - langpair: "en|si"
+          description: "English to Sinhala"
+        - langpair: "en|ar"
+          description: "English to Arabic"
+        - langpair: "en|zh-CN"
+          description: "English to Chinese (Simplified)"
+        - langpair: "en|zh-TW"
+          description: "English to Chinese (Traditional)"
+        - langpair: "en|ja"
+          description: "English to Japanese"
+        - langpair: "en|ko"
+          description: "English to Korean"
+        - langpair: "en|ru"
+          description: "English to Russian"
+        - langpair: "en|pt"
+          description: "English to Portuguese"
+        - langpair: "en|it"
+          description: "English to Italian"
+        - langpair: "en|nl"
+          description: "English to Dutch"
+        - langpair: "en|sv"
+          description: "English to Swedish"
+        - langpair: "en|pl"
+          description: "English to Polish"
+        - langpair: "en|tr"
+          description: "English to Turkish"
+        - langpair: "en|vi"
+          description: "English to Vietnamese"
+
+externalDocs:
+  description: Official MyMemory Translation API Documentation
+  url: https://mymemory.translated.net/doc/spec.php
