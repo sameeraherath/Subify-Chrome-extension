@@ -1,12 +1,36 @@
 // Function to translate text using MyMemory Translation API
 async function translateText(text) {
     try {
+        // Check if extension context is still valid
+        if (!chrome.runtime?.id) {
+            console.warn('Extension context invalidated, using default language');
+            const lang = 'fr'; // Default to French
+            return await performTranslation(text, lang);
+        }
+        
         // Retrieve the selected language from storage
-        const { targetLang } = await chrome.storage.sync.get('targetLang');
+        let targetLang;
+        try {
+            const result = await chrome.storage.sync.get('targetLang');
+            targetLang = result.targetLang;
+        } catch (storageError) {
+            console.warn('Could not access storage, using default language:', storageError);
+            targetLang = null;
+        }
         
         // Default to French if no language is set
         const lang = targetLang || 'fr';
-    
+        
+        return await performTranslation(text, lang);
+    } catch (error) {
+        console.error('Translation error:', error);
+        return 'Error translating text';
+    }
+}
+
+// Helper function to perform the actual translation
+async function performTranslation(text, lang) {
+    try {
         // Fetch translation from MyMemory Translation API
         const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${lang}`);
         
@@ -17,7 +41,7 @@ async function translateText(text) {
         const data = await response.json();
         return data.responseData.translatedText;
     } catch (error) {
-        console.error('Translation error:', error);
+        console.error('Translation API error:', error);
         return 'Error translating text';
     }
 }
