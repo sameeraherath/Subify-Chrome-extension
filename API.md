@@ -2,7 +2,7 @@
 
 ## Overview
 
-The YouTube Subtitle Translator extension integrates with the **MyMemory Translation API** to provide real-time translation services. This document provides detailed information about the API integration, usage patterns, and best practices.
+The Subify extension integrates with the **MyMemory Translation API** to provide real-time translation services. This document provides detailed information about the API integration, usage patterns, and best practices.
 
 ## Table of Contents
 

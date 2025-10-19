@@ -2,7 +2,7 @@
 
 ## Overview
 
-The YouTube Subtitle Translator is a Chrome extension built using Manifest V3. It consists of multiple components that work together to provide real-time translation of YouTube subtitles.
+Subify is a Chrome extension built using Manifest V3. It consists of multiple components that work together to provide real-time translation of YouTube subtitles.
 
 ## System Architecture
 
@@ -639,7 +639,7 @@ Translation Manager
 
 ```javascript
 // Check if content script is loaded
-console.log("YouTube Subtitle Translator loaded");
+console.log("Subify loaded");
 
 // Check storage state
 chrome.storage.sync.get("targetLang", (data) => console.log(data));

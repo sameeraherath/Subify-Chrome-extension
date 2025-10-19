@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Subtitle Translator",
+  "name": "Subify",
   "version": "1.0",
-  "description": "Translate YouTube subtitles when hovering over words.",
+  "description": "Subify - Translate YouTube subtitles when hovering over words.",
   "permissions": ["storage", "activeTab", "scripting"],
   "background": {
     "service_worker": "background.js"

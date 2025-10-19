@@ -1,31 +1,388 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>YouTube Subtitle Translator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subify</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 320px;
+      min-height: 200px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      margin: 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .header p {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    
+    .language-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .language-select:focus {
+      outline: none;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+    
+    .language-select:hover {
+      background: white;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .features {
+      margin-top: 15px;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    
+    
+    .help-text {
+      font-size: 10px;
+      opacity: 0.6;
+      text-align: center;
+      margin-top: 15px;
+      margin-bottom: 20px;
+      font-style: italic;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 6px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .feature-item span:first-child {
+      font-size: 12px;
+    }
+    
+    .header h1 {
+      background: linear-gradient(45deg, #fff, #e0e0e0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .features {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 15px;
+    }
+    
+    .form-group {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 30px;
+    }
+    
+    .tips-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 15px;
+    }
+    
+    .tips-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    
+    .tip-item {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    
+    .footer-info {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .version-info {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+    
+    .version {
+      font-weight: 600;
+      color: #4ade80;
+    }
+    
+    .separator {
+      margin: 0 8px;
+      opacity: 0.5;
+    }
+    
+    .credits {
+      font-style: italic;
+    }
+    
+    .links {
+      font-size: 10px;
+      opacity: 0.6;
+    }
+    
+    .link {
+      color: #60a5fa;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .link:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+    
+    .privacy-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+    
+    .privacy-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    
+    .privacy-content {
+      margin-bottom: 12px;
+    }
+    
+    .privacy-content p {
+      font-size: 10px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    
+    .privacy-content strong {
+      color: #4ade80;
+      font-weight: 600;
+    }
+    
+    .privacy-btn {
+      background: rgba(96, 165, 250, 0.2);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      color: #60a5fa;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    .privacy-btn:hover {
+      background: rgba(96, 165, 250, 0.3);
+      transform: translateY(-1px);
+    }
+  </style>
 </head>
 <body>
-  <h1>Subtitle Translator</h1>
-  <label for="lang-select">Select Language:</label>
-  <select id="lang-select">
-    <option value="fr">French</option>
-    <option value="es">Spanish</option>
-    <option value="de">German</option>
-    <option value="si">Sinhala</option>
-    <option value="ar">Arabic</option>
-    <option value="zh-CN">Chinese (Simplified)</option>
-    <option value="zh-TW">Chinese (Traditional)</option>
-    <option value="ja">Japanese</option>
-    <option value="ko">Korean</option>
-    <option value="ru">Russian</option>
-    <option value="pt">Portuguese</option>
-    <option value="it">Italian</option>
-    <option value="nl">Dutch</option>
-    <option value="sv">Swedish</option>
-    <option value="pl">Polish</option>
-    <option value="tr">Turkish</option>
-    <option value="vi">Vietnamese</option>
-    <!-- Add more languages as needed -->
+  <div class="header">
+    <h1>🌐 Subify</h1>
+    <p>Hover over YouTube subtitles to translate</p>
+  </div>
+  
+  <div class="form-group">
+    <label for="lang-select">Target Language</label>
+    <select id="lang-select" class="language-select" aria-label="Select target language for translation">
+      <option value="fr">🇫🇷 French</option>
+      <option value="es">🇪🇸 Spanish</option>
+      <option value="de">🇩🇪 German</option>
+      <option value="si">🇱🇰 Sinhala</option>
+      <option value="ar">🇸🇦 Arabic</option>
+      <option value="zh-CN">🇨🇳 Chinese (Simplified)</option>
+      <option value="zh-TW">🇹🇼 Chinese (Traditional)</option>
+      <option value="ja">🇯🇵 Japanese</option>
+      <option value="ko">🇰🇷 Korean</option>
+      <option value="ru">🇷🇺 Russian</option>
+      <option value="pt">🇵🇹 Portuguese</option>
+      <option value="it">🇮🇹 Italian</option>
+      <option value="nl">🇳🇱 Dutch</option>
+      <option value="sv">🇸🇪 Swedish</option>
+      <option value="pl">🇵🇱 Polish</option>
+      <option value="tr">🇹🇷 Turkish</option>
+      <option value="vi">🇻🇳 Vietnamese</option>
   </select>
+  </div>
+  
+  <div class="status">
+    <div class="status-dot"></div>
+    <span>Extension Active</span>
+  </div>
+  
+  <div class="features">
+    <div class="feature-item">
+      <span>✨</span>
+      <span>Hover to translate</span>
+    </div>
+    <div class="feature-item">
+      <span>⚡</span>
+      <span>Instant translation</span>
+    </div>
+    <div class="feature-item">
+      <span>🎯</span>
+      <span>Works on all YouTube videos</span>
+    </div>
+  </div>
+  
+  <div class="help-text">
+    Press Ctrl+S to focus language selector
+  </div>
+  
+  <!-- Help & Tips Section -->
+  <div class="tips-section">
+    <h3>💡 Tips & Help</h3>
+    <div class="tip-item">
+      <span>• Hover over any subtitle word to translate</span>
+    </div>
+    <div class="tip-item">
+      <span>• Works on all YouTube videos automatically</span>
+    </div>
+    <div class="tip-item">
+      <span>• Use Ctrl+S to quickly focus language selector</span>
+    </div>
+    <div class="tip-item">
+      <span>• Translations appear instantly in tooltips</span>
+    </div>
+  </div>
+  
+  <!-- Version & Credits Section -->
+  <div class="footer-info">
+    <div class="version-info">
+      <span class="version">Subify v1.0</span>
+      <span class="separator">•</span>
+      <span class="credits">Powered by MyMemory API</span>
+    </div>
+    <div class="links">
+      <a href="#" class="link" id="github-link">GitHub</a>
+      <span class="separator">•</span>
+      <a href="#" class="link" id="support-link">Support</a>
+    </div>
+  </div>
+  
+  <!-- Privacy Policy Section -->
+  <div class="privacy-section">
+    <h3>🔒 Privacy & Data</h3>
+    <div class="privacy-content">
+      <p>• <strong>No data collection:</strong> We don't store your personal information</p>
+      <p>• <strong>Local storage only:</strong> Language preference saved locally</p>
+      <p>• <strong>Secure translation:</strong> Text sent directly to MyMemory API</p>
+      <p>• <strong>No tracking:</strong> We don't track your browsing activity</p>
+    </div>
+    <button class="privacy-btn" id="privacy-details">View Full Privacy Policy</button>
+  </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>
