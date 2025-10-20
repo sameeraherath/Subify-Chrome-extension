@@ -4,7 +4,7 @@ async function translateText(text) {
         // Check if extension context is still valid
         if (!chrome.runtime?.id) {
             console.warn('Extension context invalidated, using default language');
-            const lang = 'fr'; // Default to French
+            const lang = 'si'; // Default to Sinhala
             return await performTranslation(text, lang);
         }
         
@@ -18,8 +18,8 @@ async function translateText(text) {
             targetLang = null;
         }
         
-        // Default to French if no language is set
-        const lang = targetLang || 'fr';
+        // Default to Sinhala if no language is set
+        const lang = targetLang || 'si';
         
         return await performTranslation(text, lang);
     } catch (error) {

@@ -1,13 +1,21 @@
 // Function to initialize the language dropdown with the stored language
 function initializeDropdown() {
   chrome.storage.sync.get('targetLang', (data) => {
-      const selectedLang = data.targetLang || 'fr'; // Default to French if no language is set
+      const selectedLang = data.targetLang || 'si'; // Default to Sinhala
       const langSelect = document.getElementById('lang-select');
       langSelect.value = selectedLang;
       
       // Add visual feedback when language changes
       langSelect.addEventListener('change', (event) => {
           const selectedLang = event.target.value;
+          
+          // Check if user selected a language other than Sinhala
+          if (selectedLang !== 'si') {
+              showComingSoonToast(selectedLang);
+              // Reset to Sinhala
+              langSelect.value = 'si';
+              return;
+          }
           
           // Add a subtle animation to the select element
           langSelect.style.transform = 'scale(1.02)';
@@ -16,6 +24,117 @@ function initializeDropdown() {
           }, 150);
       });
   });
+}
+
+// Show coming soon toast message
+function showComingSoonToast(selectedLang) {
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'coming-soon-toast';
+  toast.innerHTML = `
+    <div class="toast-content">
+      <div class="toast-text">
+        <div class="toast-title">Coming Soon!</div>
+        <div class="toast-message">${getLanguageName(selectedLang)} translation will be available in the next version</div>
+      </div>
+    </div>
+  `;
+  
+  // Add toast styles - improved responsive design
+  toast.style.cssText = `
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 10px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-30px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    max-width: calc(100vw - 40px);
+    width: 280px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  `;
+  
+  // Add content styles
+  const toastContent = toast.querySelector('.toast-content');
+  toastContent.style.cssText = `
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  `;
+  
+  const toastText = toast.querySelector('.toast-text');
+  toastText.style.cssText = `
+    width: 100%;
+  `;
+  
+  const toastTitle = toast.querySelector('.toast-title');
+  toastTitle.style.cssText = `
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+    color: #4ade80;
+    line-height: 1.2;
+  `;
+  
+  const toastMessage = toast.querySelector('.toast-message');
+  toastMessage.style.cssText = `
+    font-size: 13px;
+    opacity: 0.85;
+    line-height: 1.4;
+    word-wrap: break-word;
+    hyphens: auto;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Animate in with improved easing
+  requestAnimationFrame(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+  });
+  
+  // Remove after 4.5 seconds with improved timing
+  setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(-30px)';
+      setTimeout(() => {
+          if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+          }
+      }, 400);
+  }, 4500);
+}
+
+// Get language name from language code
+function getLanguageName(langCode) {
+  const languageNames = {
+    'fr': 'French',
+    'es': 'Spanish', 
+    'de': 'German',
+    'ar': 'Arabic',
+    'zh-CN': 'Chinese (Simplified)',
+    'zh-TW': 'Chinese (Traditional)',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'ru': 'Russian',
+    'pt': 'Portuguese',
+    'it': 'Italian',
+    'nl': 'Dutch',
+    'sv': 'Swedish',
+    'pl': 'Polish',
+    'tr': 'Turkish',
+    'vi': 'Vietnamese'
+  };
+  return languageNames[langCode] || langCode;
 }
 
 
@@ -78,20 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupKeyboardShortcuts();
   addInteractiveEffects();
   
-  // Set up language change handler
-  document.getElementById('lang-select').addEventListener('change', (event) => {
-      const selectedLang = event.target.value;
-      const statusText = document.querySelector('.status span');
-      
-      // Show loading state
-      const originalText = statusText.textContent;
-      statusText.innerHTML = '<span class="loading"></span>Saving...';
-      
-      // Save the selected language to Chrome storage
-      chrome.storage.sync.set({ targetLang: selectedLang }, () => {
-          console.log('Target language set to ' + selectedLang);
-          updateStatusIndicator(); // Update status after change
-      });
+  // Set default language to Sinhala
+  chrome.storage.sync.set({ targetLang: 'si' }, () => {
+      console.log('Target language set to Sinhala (si)');
   });
   
   // Setup privacy policy and links
@@ -113,7 +221,7 @@ function setupPrivacyAndLinks() {
   if (githubLink) {
       githubLink.addEventListener('click', (e) => {
           e.preventDefault();
-          chrome.tabs.create({ url: 'https://github.com/your-username/subify' });
+          chrome.tabs.create({ url: 'https://github.com/sameeraherath' });
       });
   }
   
@@ -122,7 +230,7 @@ function setupPrivacyAndLinks() {
   if (supportLink) {
       supportLink.addEventListener('click', (e) => {
           e.preventDefault();
-          chrome.tabs.create({ url: 'https://github.com/your-username/subify/issues' });
+          chrome.tabs.create({ url: 'https://github.com/sameeraherath/subify-chrome-extension' });
       });
   }
 }
