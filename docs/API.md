@@ -264,7 +264,12 @@ async function translateWithRateLimit(text, langPair) {
 
 ## Supported Languages
 
-The extension currently supports translation from English (`en`) to the following languages:
+**Current Version (v1.0)**:
+The extension currently supports translation from English (`en`) to:
+- **Sinhala** (`si`) - Primary supported language
+
+**Coming Soon (v2.0)**:
+The extension will support translation from English (`en`) to the following languages:
 
 | Language   | Code | Language              | Code    |
 | ---------- | ---- | --------------------- | ------- |
@@ -277,6 +282,8 @@ The extension currently supports translation from English (`en`) to the followin
 | Dutch      | `nl` | Swedish               | `sv`    |
 | Polish     | `pl` | Turkish               | `tr`    |
 | Vietnamese | `vi` |                       |         |
+
+> **Note**: When users attempt to select languages other than Sinhala, the extension displays a "Coming Soon" toast notification indicating that multi-language support will be available in the next version.
 
 ### Language Code Reference
 

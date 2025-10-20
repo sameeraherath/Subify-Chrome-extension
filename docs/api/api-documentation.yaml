@@ -16,7 +16,8 @@ info:
       - With email registration: 1000 requests per day
 
     ## Key Features
-    - Real-time translation from English to 17+ languages
+    - Real-time translation from English to Sinhala (v1.0)
+    - Multi-language support coming in v2.0 (17+ languages)
     - RESTful API design
     - JSON response format
     - No authentication required for basic usage

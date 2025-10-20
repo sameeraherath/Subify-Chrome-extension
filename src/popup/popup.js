@@ -1,29 +1,38 @@
+// Import utilities
+import { LANGUAGE_NAMES, EXTENSION_CONFIG } from '../utils/constants.js';
+import { getStoredLanguage, setStoredLanguage } from '../utils/storage.js';
+
 // Function to initialize the language dropdown with the stored language
-function initializeDropdown() {
-  chrome.storage.sync.get('targetLang', (data) => {
-      const selectedLang = data.targetLang || 'si'; // Default to Sinhala
-      const langSelect = document.getElementById('lang-select');
-      langSelect.value = selectedLang;
-      
-      // Add visual feedback when language changes
-      langSelect.addEventListener('change', (event) => {
-          const selectedLang = event.target.value;
-          
-          // Check if user selected a language other than Sinhala
-          if (selectedLang !== 'si') {
-              showComingSoonToast(selectedLang);
-              // Reset to Sinhala
-              langSelect.value = 'si';
-              return;
-          }
-          
-          // Add a subtle animation to the select element
-          langSelect.style.transform = 'scale(1.02)';
-          setTimeout(() => {
-              langSelect.style.transform = 'scale(1)';
-          }, 150);
-      });
-  });
+async function initializeDropdown() {
+  try {
+    const selectedLang = await getStoredLanguage();
+    const langSelect = document.getElementById('lang-select');
+    langSelect.value = selectedLang;
+
+    // Add visual feedback when language changes
+    langSelect.addEventListener('change', async (event) => {
+        const selectedLang = event.target.value;
+
+        // Check if user selected a language other than Sinhala
+        if (!EXTENSION_CONFIG.CURRENTLY_SUPPORTED.includes(selectedLang)) {
+            showComingSoonToast(selectedLang);
+            // Reset to Sinhala
+            langSelect.value = EXTENSION_CONFIG.DEFAULT_LANGUAGE;
+            return;
+        }
+
+        // Save the language preference
+        await setStoredLanguage(selectedLang);
+
+        // Add a subtle animation to the select element
+        langSelect.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+            langSelect.style.transform = 'scale(1)';
+        }, 150);
+    });
+  } catch (error) {
+    console.error('Error initializing dropdown:', error);
+  }
 }
 
 // Show coming soon toast message
@@ -39,7 +48,7 @@ function showComingSoonToast(selectedLang) {
       </div>
     </div>
   `;
-  
+
   // Add toast styles - improved responsive design
   toast.style.cssText = `
     position: fixed;
@@ -61,7 +70,7 @@ function showComingSoonToast(selectedLang) {
     text-align: center;
     backdrop-filter: blur(10px);
   `;
-  
+
   // Add content styles
   const toastContent = toast.querySelector('.toast-content');
   toastContent.style.cssText = `
@@ -70,12 +79,12 @@ function showComingSoonToast(selectedLang) {
     justify-content: center;
     width: 100%;
   `;
-  
+
   const toastText = toast.querySelector('.toast-text');
   toastText.style.cssText = `
     width: 100%;
   `;
-  
+
   const toastTitle = toast.querySelector('.toast-title');
   toastTitle.style.cssText = `
     font-weight: 600;
@@ -84,7 +93,7 @@ function showComingSoonToast(selectedLang) {
     color: #4ade80;
     line-height: 1.2;
   `;
-  
+
   const toastMessage = toast.querySelector('.toast-message');
   toastMessage.style.cssText = `
     font-size: 13px;
@@ -93,15 +102,15 @@ function showComingSoonToast(selectedLang) {
     word-wrap: break-word;
     hyphens: auto;
   `;
-  
+
   document.body.appendChild(toast);
-  
+
   // Animate in with improved easing
   requestAnimationFrame(() => {
       toast.style.opacity = '1';
       toast.style.transform = 'translateX(-50%) translateY(0)';
   });
-  
+
   // Remove after 4.5 seconds with improved timing
   setTimeout(() => {
       toast.style.opacity = '0';
@@ -116,25 +125,7 @@ function showComingSoonToast(selectedLang) {
 
 // Get language name from language code
 function getLanguageName(langCode) {
-  const languageNames = {
-    'fr': 'French',
-    'es': 'Spanish', 
-    'de': 'German',
-    'ar': 'Arabic',
-    'zh-CN': 'Chinese (Simplified)',
-    'zh-TW': 'Chinese (Traditional)',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'ru': 'Russian',
-    'pt': 'Portuguese',
-    'it': 'Italian',
-    'nl': 'Dutch',
-    'sv': 'Swedish',
-    'pl': 'Polish',
-    'tr': 'Turkish',
-    'vi': 'Vietnamese'
-  };
-  return languageNames[langCode] || langCode;
+  return LANGUAGE_NAMES[langCode] || langCode;
 }
 
 
@@ -142,7 +133,7 @@ function getLanguageName(langCode) {
 function updateStatusIndicator() {
   const statusDot = document.querySelector('.status-dot');
   const statusText = document.querySelector('.status span');
-  
+
   // Check if extension context is valid
   if (chrome.runtime?.id) {
       statusDot.style.background = '#4ade80';
@@ -167,41 +158,46 @@ function setupKeyboardShortcuts() {
 // Add smooth transitions and hover effects
 function addInteractiveEffects() {
   const langSelect = document.getElementById('lang-select');
-  
+
   // Add focus effect
   langSelect.addEventListener('focus', () => {
       langSelect.style.transform = 'scale(1.02)';
       langSelect.style.boxShadow = '0 0 0 3px rgba(255, 255, 255, 0.3)';
   });
-  
+
   // Remove focus effect
   langSelect.addEventListener('blur', () => {
       langSelect.style.transform = 'scale(1)';
       langSelect.style.boxShadow = 'none';
   });
-  
+
   // Add click effect
   langSelect.addEventListener('mousedown', () => {
       langSelect.style.transform = 'scale(0.98)';
   });
-  
+
   langSelect.addEventListener('mouseup', () => {
       langSelect.style.transform = 'scale(1.02)';
   });
 }
 
 // Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  initializeDropdown();
+document.addEventListener('DOMContentLoaded', async () => {
+  await initializeDropdown();
   updateStatusIndicator();
   setupKeyboardShortcuts();
   addInteractiveEffects();
-  
-  // Set default language to Sinhala
-  chrome.storage.sync.set({ targetLang: 'si' }, () => {
-      console.log('Target language set to Sinhala (si)');
-  });
-  
+
+  // Set default language to Sinhala if not already set
+  try {
+    const currentLang = await getStoredLanguage();
+    if (!currentLang) {
+      await setStoredLanguage(EXTENSION_CONFIG.DEFAULT_LANGUAGE);
+    }
+  } catch (error) {
+    console.error('Error setting default language:', error);
+  }
+
   // Setup privacy policy and links
   setupPrivacyAndLinks();
 });
@@ -215,7 +211,7 @@ function setupPrivacyAndLinks() {
           showPrivacyModal();
       });
   }
-  
+
   // GitHub link
   const githubLink = document.getElementById('github-link');
   if (githubLink) {
@@ -224,7 +220,7 @@ function setupPrivacyAndLinks() {
           chrome.tabs.create({ url: 'https://github.com/sameeraherath' });
       });
   }
-  
+
   // Support link
   const supportLink = document.getElementById('support-link');
   if (supportLink) {
@@ -252,7 +248,7 @@ function showPrivacyModal() {
     justify-content: center;
     padding: 20px;
   `;
-  
+
   // Create modal content
   const modalContent = document.createElement('div');
   modalContent.style.cssText = `
@@ -265,7 +261,7 @@ function showPrivacyModal() {
     overflow-y: auto;
     position: relative;
   `;
-  
+
   modalContent.innerHTML = `
     <button id="close-modal" style="
       position: absolute;
@@ -277,46 +273,46 @@ function showPrivacyModal() {
       font-size: 20px;
       cursor: pointer;
     ">×</button>
-    
+
     <h2 style="margin-bottom: 15px; font-size: 18px;">🔒 Privacy Policy</h2>
-    
+
     <div style="font-size: 12px; line-height: 1.5;">
       <h3 style="margin: 15px 0 8px 0; font-size: 14px;">Data Collection</h3>
       <p>Subify does not collect, store, or transmit any personal information. We respect your privacy completely.</p>
-      
+
       <h3 style="margin: 15px 0 8px 0; font-size: 14px;">Local Storage</h3>
       <p>Only your language preference is stored locally in your browser using Chrome's storage API. This data never leaves your device.</p>
-      
+
       <h3 style="margin: 15px 0 8px 0; font-size: 14px;">Translation Service</h3>
       <p>Text translations are sent directly to MyMemory Translation API. We do not store or log any translated content.</p>
-      
+
       <h3 style="margin: 15px 0 8px 0; font-size: 14px;">No Tracking</h3>
       <p>We do not use analytics, tracking pixels, or any other monitoring tools. Your browsing activity remains private.</p>
-      
+
       <h3 style="margin: 15px 0 8px 0; font-size: 14px;">Third-Party Services</h3>
       <p>We only use MyMemory Translation API for translations. Please review their privacy policy for their data practices.</p>
-      
+
       <h3 style="margin: 15px 0 8px 0; font-size: 14px;">Contact</h3>
       <p>For privacy questions, contact us through our GitHub repository.</p>
     </div>
   `;
-  
+
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
-  
+
   // Close modal functionality
   const closeBtn = modalContent.querySelector('#close-modal');
   closeBtn.addEventListener('click', () => {
       document.body.removeChild(modal);
   });
-  
+
   // Close on overlay click
   modal.addEventListener('click', (e) => {
       if (e.target === modal) {
           document.body.removeChild(modal);
       }
   });
-  
+
   // Close on Escape key
   const handleEscape = (e) => {
       if (e.key === 'Escape') {
