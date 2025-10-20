@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Subify",
   "version": "1.0",
-  "description": "Subify - Translate YouTube subtitles when hovering over words. Perfect for learning English with Sinhala translations. Hover over any word in YouTube subtitles for instant translation.",
+  "description": "Translate YouTube subtitles instantly by hovering over words. Perfect for learning English with Sinhala translations.",
   "author": "Sameera Herath",
   "homepage_url": "https://github.com/sameeraherath/subify-chrome-extension",
   "minimum_chrome_version": "88",
