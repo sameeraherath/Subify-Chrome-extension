@@ -1,7 +1,7 @@
 // Constants used throughout the extension
 export const EXTENSION_CONFIG = {
   NAME: 'Subify',
-  VERSION: '1.0.0',
+  VERSION: '1.0.1',
   DEFAULT_LANGUAGE: 'si',
   SUPPORTED_LANGUAGES: [
     'fr', 'es', 'de', 'si', 'ar', 'zh-CN', 'zh-TW',

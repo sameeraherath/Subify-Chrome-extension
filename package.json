@@ -1,6 +1,6 @@
 {
   "name": "subify-chrome-extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "YouTube subtitle translator Chrome extension - Translate English subtitles to Sinhala",
   "main": "dist/manifest.json",
   "scripts": {

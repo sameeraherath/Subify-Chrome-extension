@@ -6,6 +6,7 @@ import { getStoredLanguage, setStoredLanguage } from '../utils/storage.js';
 async function initializeDropdown() {
   try {
     const selectedLang = await getStoredLanguage();
+    console.log('Retrieved language preference:', selectedLang);
     const langSelect = document.getElementById('lang-select');
     langSelect.value = selectedLang;
 
@@ -22,7 +23,12 @@ async function initializeDropdown() {
         }
 
         // Save the language preference
-        await setStoredLanguage(selectedLang);
+        const saveResult = await setStoredLanguage(selectedLang);
+        if (saveResult) {
+            console.log('Language preference updated successfully');
+        } else {
+            console.error('Failed to save language preference');
+        }
 
         // Add a subtle animation to the select element
         langSelect.style.transform = 'scale(1.02)';
@@ -192,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const currentLang = await getStoredLanguage();
     if (!currentLang) {
+      console.log('Setting default language to:', EXTENSION_CONFIG.DEFAULT_LANGUAGE);
       await setStoredLanguage(EXTENSION_CONFIG.DEFAULT_LANGUAGE);
     }
   } catch (error) {

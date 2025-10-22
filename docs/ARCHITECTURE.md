@@ -68,7 +68,7 @@ Subify is a Chrome extension built using Manifest V3. It consists of multiple co
 ```json
 {
   "manifest_version": 3,
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab"],
   "background": {
     "service_worker": "background.js"
   },
@@ -88,7 +88,6 @@ Subify is a Chrome extension built using Manifest V3. It consists of multiple co
 
 - `storage`: Persist user language preferences
 - `activeTab`: Access current YouTube tab content
-- `scripting`: Inject content scripts dynamically
 
 ### 2. Popup Interface (`popup.html` + `popup.js`)
 
@@ -124,7 +123,7 @@ chrome.storage.sync.set({ targetLang: selectedLang })
 
 ```javascript
 {
-  targetLang: "fr"; // ISO 639-1 language code
+  targetLang: 'fr'; // ISO 639-1 language code
 }
 ```
 
@@ -140,11 +139,11 @@ chrome.storage.sync.set({ targetLang: selectedLang })
 **Current Implementation**:
 
 ```javascript
-chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === "install") {
-    console.log("Extension installed");
-  } else if (details.reason === "update") {
-    console.log("Extension updated");
+chrome.runtime.onInstalled.addListener(details => {
+  if (details.reason === 'install') {
+    console.log('Extension installed');
+  } else if (details.reason === 'update') {
+    console.log('Extension updated');
   }
 });
 ```
@@ -213,11 +212,11 @@ Auto-remove after 2 seconds
 ```javascript
 function attachListener() {
   const subtitleElements = document.getElementsByClassName(
-    "ytp-caption-segment"
+    'ytp-caption-segment'
   );
 
-  Array.from(subtitleElements).forEach((subtitle) => {
-    subtitle.addEventListener("mouseover", handleMouseOver);
+  Array.from(subtitleElements).forEach(subtitle => {
+    subtitle.addEventListener('mouseover', handleMouseOver);
   });
 }
 ```
@@ -241,8 +240,8 @@ function attachListener() {
 async function translateText(text) {
   try {
     // 1. Get user preference
-    const { targetLang } = await chrome.storage.sync.get("targetLang");
-    const lang = targetLang || "fr";
+    const { targetLang } = await chrome.storage.sync.get('targetLang');
+    const lang = targetLang || 'fr';
 
     // 2. Build API URL
     const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
@@ -254,15 +253,15 @@ async function translateText(text) {
 
     // 4. Validate response
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      throw new Error('Network response was not ok');
     }
 
     // 5. Parse and return
     const data = await response.json();
     return data.responseData.translatedText;
   } catch (error) {
-    console.error("Translation error:", error);
-    return "Error translating text";
+    console.error('Translation error:', error);
+    return 'Error translating text';
   }
 }
 ```
@@ -272,15 +271,15 @@ async function translateText(text) {
 **Creation and Styling**:
 
 ```javascript
-const tooltip = document.createElement("div");
-tooltip.style.position = "absolute";
-tooltip.style.backgroundColor = "yellow";
-tooltip.style.color = "black";
-tooltip.style.fontSize = "25px";
-tooltip.style.borderRadius = "5px";
-tooltip.style.padding = "6px";
-tooltip.style.zIndex = "1000";
-tooltip.style.pointerEvents = "none"; // Prevent tooltip from blocking mouse
+const tooltip = document.createElement('div');
+tooltip.style.position = 'absolute';
+tooltip.style.backgroundColor = 'yellow';
+tooltip.style.color = 'black';
+tooltip.style.fontSize = '25px';
+tooltip.style.borderRadius = '5px';
+tooltip.style.padding = '6px';
+tooltip.style.zIndex = '1000';
+tooltip.style.pointerEvents = 'none'; // Prevent tooltip from blocking mouse
 tooltip.innerText = translatedWord;
 document.body.appendChild(tooltip);
 ```
@@ -289,15 +288,15 @@ document.body.appendChild(tooltip);
 
 ```javascript
 // Initial position
-tooltip.style.left = event.clientX + 10 + "px";
-tooltip.style.top = event.clientY + 10 + "px";
+tooltip.style.left = event.clientX + 10 + 'px';
+tooltip.style.top = event.clientY + 10 + 'px';
 
 // Update position on mouse move
 function updateTooltipPosition(event) {
-  tooltip.style.left = event.clientX + 10 + "px";
-  tooltip.style.top = event.clientY + 10 + "px";
+  tooltip.style.left = event.clientX + 10 + 'px';
+  tooltip.style.top = event.clientY + 10 + 'px';
 }
-document.addEventListener("mousemove", updateTooltipPosition);
+document.addEventListener('mousemove', updateTooltipPosition);
 ```
 
 **Cleanup**:
@@ -305,7 +304,7 @@ document.addEventListener("mousemove", updateTooltipPosition);
 ```javascript
 setTimeout(() => {
   document.body.removeChild(tooltip);
-  document.removeEventListener("mousemove", updateTooltipPosition);
+  document.removeEventListener('mousemove', updateTooltipPosition);
 }, 2000);
 ```
 
@@ -431,16 +430,16 @@ interface StorageSchema {
 1. **Write** (popup.js):
 
 ```javascript
-chrome.storage.sync.set({ targetLang: "fr" }, () => {
-  console.log("Language preference saved");
+chrome.storage.sync.set({ targetLang: 'fr' }, () => {
+  console.log('Language preference saved');
 });
 ```
 
 2. **Read** (content.js, popup.js):
 
 ```javascript
-chrome.storage.sync.get("targetLang", (data) => {
-  const lang = data.targetLang || "fr"; // Default fallback
+chrome.storage.sync.get('targetLang', data => {
+  const lang = data.targetLang || 'fr'; // Default fallback
 });
 ```
 
@@ -492,7 +491,7 @@ setTimeout(() => {
   }
 
   // Remove event listener
-  document.removeEventListener("mousemove", updateTooltipPosition);
+  document.removeEventListener('mousemove', updateTooltipPosition);
 }, 2000);
 ```
 
@@ -639,20 +638,20 @@ Translation Manager
 
 ```javascript
 // Check if content script is loaded
-console.log("Subify loaded");
+console.log('Subify loaded');
 
 // Check storage state
-chrome.storage.sync.get("targetLang", (data) => console.log(data));
+chrome.storage.sync.get('targetLang', data => console.log(data));
 
 // Monitor subtitle detection
-const observer = new MutationObserver((mutations) => {
-  console.log("Mutations detected:", mutations.length);
+const observer = new MutationObserver(mutations => {
+  console.log('Mutations detected:', mutations.length);
   attachListener();
 });
 ```
 
 ---
 
-**Document Version**: 1.0.0  
-**Last Updated**: December 2024  
+**Document Version**: 1.0.0
+**Last Updated**: December 2024
 **Author**: Development Team

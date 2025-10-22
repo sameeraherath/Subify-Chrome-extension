@@ -1,14 +1,12 @@
-// Storage utilities for Chrome extension
-export const STORAGE_KEYS = {
-  TARGET_LANGUAGE: 'targetLang'
-};
+// Import from constants to avoid duplication
+import { STORAGE_KEYS } from './constants.js';
 
 // Get stored language preference
 export async function getStoredLanguage() {
   try {
     if (!chrome.runtime?.id) {
       console.warn('Extension context invalidated');
-      return STORAGE_KEYS.DEFAULT_LANGUAGE;
+      return 'si'; // Default to Sinhala
     }
 
     const result = await chrome.storage.sync.get(STORAGE_KEYS.TARGET_LANGUAGE);
@@ -28,6 +26,7 @@ export async function setStoredLanguage(language) {
     }
 
     await chrome.storage.sync.set({ [STORAGE_KEYS.TARGET_LANGUAGE]: language });
+    console.log('Language preference saved:', language);
     return true;
   } catch (error) {
     console.error('Could not save language preference:', error);
