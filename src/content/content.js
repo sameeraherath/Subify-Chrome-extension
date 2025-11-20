@@ -8,7 +8,7 @@ function createTooltip(text, translatedText, event) {
     const tooltip = document.createElement('div');
     tooltip.className = 'subify-tooltip';
 
-    // Apply modern styling
+
     Object.assign(tooltip.style, {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.9)',
