@@ -1,7 +1,28 @@
 // Import utilities
-import { translateText } from '../utils/api.js';
 import { getStoredLanguage } from '../utils/storage.js';
-import { UI_CONFIG } from '../utils/constants.js';
+import { UI_CONFIG, MESSAGE_TYPES } from '../utils/constants.js';
+
+// Ask the background worker to translate (it does the network request)
+function requestTranslation(text, targetLang) {
+  return new Promise((resolve, reject) => {
+    // After the extension is reloaded, scripts already on the page are orphaned
+    if (!chrome.runtime?.id) {
+      reject(new Error('Extension context invalidated, reload the page'));
+      return;
+    }
+
+    chrome.runtime.sendMessage(
+      { type: MESSAGE_TYPES.TRANSLATE, text, targetLang },
+      response => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
+}
 
 // Enhanced tooltip creation with better styling
 function createTooltip(text, translatedText, event) {
@@ -94,7 +115,7 @@ async function handleMouseOver(event) {
     const targetLang = await getStoredLanguage();
 
     // Translate the word
-    const translatedWord = await translateText(word, targetLang);
+    const translatedWord = await requestTranslation(word, targetLang);
 
     // Create and show tooltip
     const tooltip = createTooltip(word, translatedWord, event);
