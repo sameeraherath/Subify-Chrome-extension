@@ -264,12 +264,8 @@ async function translateWithRateLimit(text, langPair) {
 
 ## Supported Languages
 
-**Current Version (v1.0)**:
-The extension currently supports translation from English (`en`) to:
-- **Sinhala** (`si`) - Primary supported language
-
-**Coming Soon (v2.0)**:
-The extension will support translation from English (`en`) to the following languages:
+**Current Version (v1.1)**:
+The extension supports translation from English (`en`) to the following languages:
 
 | Language   | Code | Language              | Code    |
 | ---------- | ---- | --------------------- | ------- |
@@ -281,9 +277,10 @@ The extension will support translation from English (`en`) to the following lang
 | Portuguese | `pt` | Italian               | `it`    |
 | Dutch      | `nl` | Swedish               | `sv`    |
 | Polish     | `pl` | Turkish               | `tr`    |
-| Vietnamese | `vi` |                       |         |
-
-> **Note**: When users attempt to select languages other than Sinhala, the extension displays a "Coming Soon" toast notification indicating that multi-language support will be available in the next version.
+| Vietnamese | `vi` | Hindi                 | `hi`    |
+| Bengali    | `bn` | Indonesian            | `id`    |
+| Thai       | `th` | Hebrew                | `he`    |
+| Ukrainian  | `uk` |                       |         |
 
 ### Language Code Reference
 
@@ -306,8 +303,8 @@ async function translateText(text) {
     // Retrieve the selected language from storage
     const { targetLang } = await chrome.storage.sync.get("targetLang");
 
-    // Default to French if no language is set
-    const lang = targetLang || "fr";
+    // Default to Sinhala if no language is set
+    const lang = targetLang || "si";
 
     // Fetch translation from MyMemory Translation API
     const response = await fetch(
@@ -336,7 +333,7 @@ async function translateText(text) {
   try {
     // Retrieve the selected language from storage
     const { targetLang } = await chrome.storage.sync.get("targetLang");
-    const lang = targetLang || "fr";
+    const lang = targetLang || "si";
 
     // Validate input
     if (!text || text.trim() === "") {
@@ -407,7 +404,7 @@ const CACHE_DURATION = 3600000; // 1 hour in milliseconds
 
 async function translateTextWithCache(text) {
   const { targetLang } = await chrome.storage.sync.get("targetLang");
-  const lang = targetLang || "fr";
+  const lang = targetLang || "si";
   const cacheKey = `${text}_${lang}`;
 
   // Check cache
@@ -548,6 +545,6 @@ For API-related issues:
 
 ---
 
-**Last Updated**: December 2024  
+**Last Updated**: November 2026  
 **API Version**: v1  
-**Document Version**: 1.0.0
+**Document Version**: 1.1.0

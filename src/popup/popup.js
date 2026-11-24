@@ -1,5 +1,5 @@
 // Import utilities
-import { LANGUAGE_NAMES, EXTENSION_CONFIG } from '../utils/constants.js';
+import { EXTENSION_CONFIG } from '../utils/constants.js';
 import { getStoredLanguage, setStoredLanguage } from '../utils/storage.js';
 
 // Function to initialize the language dropdown with the stored language
@@ -14,11 +14,9 @@ async function initializeDropdown() {
     langSelect.addEventListener('change', async (event) => {
         const selectedLang = event.target.value;
 
-        // Check if user selected a language other than Sinhala
-        if (!EXTENSION_CONFIG.CURRENTLY_SUPPORTED.includes(selectedLang)) {
-            showComingSoonToast(selectedLang);
-            // Reset to Sinhala
-            langSelect.value = EXTENSION_CONFIG.DEFAULT_LANGUAGE;
+        // Only accept languages advertised by the extension
+        if (!EXTENSION_CONFIG.SUPPORTED_LANGUAGES.includes(selectedLang)) {
+            langSelect.value = await getStoredLanguage();
             return;
         }
 
@@ -40,100 +38,6 @@ async function initializeDropdown() {
     console.error('Error initializing dropdown:', error);
   }
 }
-
-// Show coming soon toast message
-function showComingSoonToast(selectedLang) {
-  // Create toast element
-  const toast = document.createElement('div');
-  toast.className = 'coming-soon-toast';
-  toast.innerHTML = `
-    <div class="toast-content">
-      <div class="toast-text">
-        <div class="toast-title">Coming Soon!</div>
-        <div class="toast-message">${getLanguageName(selectedLang)} translation will be available in the next version</div>
-      </div>
-    </div>
-  `;
-
-  // Add toast styles - improved responsive design
-  toast.style.cssText = `
-    position: fixed;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-    color: white;
-    padding: 14px 18px;
-    border-radius: 10px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
-    z-index: 10000;
-    opacity: 0;
-    transform: translateX(-50%) translateY(-30px);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    max-width: calc(100vw - 40px);
-    width: 280px;
-    text-align: center;
-    backdrop-filter: blur(10px);
-  `;
-
-  // Add content styles
-  const toastContent = toast.querySelector('.toast-content');
-  toastContent.style.cssText = `
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  `;
-
-  const toastText = toast.querySelector('.toast-text');
-  toastText.style.cssText = `
-    width: 100%;
-  `;
-
-  const toastTitle = toast.querySelector('.toast-title');
-  toastTitle.style.cssText = `
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 4px;
-    color: #4ade80;
-    line-height: 1.2;
-  `;
-
-  const toastMessage = toast.querySelector('.toast-message');
-  toastMessage.style.cssText = `
-    font-size: 13px;
-    opacity: 0.85;
-    line-height: 1.4;
-    word-wrap: break-word;
-    hyphens: auto;
-  `;
-
-  document.body.appendChild(toast);
-
-  // Animate in with improved easing
-  requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateX(-50%) translateY(0)';
-  });
-
-  // Remove after 4.5 seconds with improved timing
-  setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(-50%) translateY(-30px)';
-      setTimeout(() => {
-          if (toast.parentNode) {
-              toast.parentNode.removeChild(toast);
-          }
-      }, 400);
-  }, 4500);
-}
-
-// Get language name from language code
-function getLanguageName(langCode) {
-  return LANGUAGE_NAMES[langCode] || langCode;
-}
-
 
 // Enhanced status indicator
 function updateStatusIndicator() {

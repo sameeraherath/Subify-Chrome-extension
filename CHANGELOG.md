@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-11-24
+
+### Added
+
+- Multi-language target selection for English YouTube subtitles
+- 23 supported target languages
+- Validation for supported language codes in the popup and storage
+
+### Changed
+
+- Removed the Sinhala-only selection restriction
+- Updated manifest and package descriptions for multi-language support
+- Updated documentation and API examples
+
 ## [1.0.0] - 2025-01-20
 
 ### Added
@@ -51,7 +65,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned for v2.0
 
-- Multi-language support (17+ languages)
 - Translation history
 - User preferences
 - Performance improvements

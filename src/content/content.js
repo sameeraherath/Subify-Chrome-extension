@@ -30,10 +30,21 @@ function createTooltip(text, translatedText, event) {
     });
 
     // Add content with original and translated text
-    tooltip.innerHTML = `
-        <div style="font-size: 12px; opacity: 0.7; margin-bottom: 2px;">${text}</div>
-        <div style="font-weight: 600;">${translatedText}</div>
-    `;
+    // (textContent, not innerHTML: API output is untrusted)
+    const originalEl = document.createElement('div');
+    Object.assign(originalEl.style, {
+        fontSize: '12px',
+        opacity: '0.7',
+        marginBottom: '2px'
+    });
+    originalEl.textContent = text;
+
+    const translatedEl = document.createElement('div');
+    translatedEl.style.fontWeight = '600';
+    translatedEl.dir = 'auto'; // render RTL languages (Arabic, Hebrew) correctly
+    translatedEl.textContent = translatedText;
+
+    tooltip.append(originalEl, translatedEl);
 
     document.body.appendChild(tooltip);
 

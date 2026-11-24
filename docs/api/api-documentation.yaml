@@ -16,13 +16,13 @@ info:
       - With email registration: 1000 requests per day
 
     ## Key Features
-    - Real-time translation from English to Sinhala (v1.0)
-    - Multi-language support coming in v2.0 (17+ languages)
+    - Real-time translation from English to 23 target languages
+    - Sinhala and 22 additional target-language options
     - RESTful API design
     - JSON response format
     - No authentication required for basic usage
 
-  version: 1.0.0
+  version: 1.1.0
   contact:
     name: API Support
     url: https://mymemory.translated.net/doc/
@@ -382,6 +382,18 @@ components:
           description: "English to Turkish"
         - langpair: "en|vi"
           description: "English to Vietnamese"
+        - langpair: "en|hi"
+          description: "English to Hindi"
+        - langpair: "en|bn"
+          description: "English to Bengali"
+        - langpair: "en|id"
+          description: "English to Indonesian"
+        - langpair: "en|th"
+          description: "English to Thai"
+        - langpair: "en|he"
+          description: "English to Hebrew"
+        - langpair: "en|uk"
+          description: "English to Ukrainian"
 
 externalDocs:
   description: Official MyMemory Translation API Documentation

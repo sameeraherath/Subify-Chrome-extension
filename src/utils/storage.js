@@ -1,19 +1,22 @@
 // Import from constants to avoid duplication
-import { STORAGE_KEYS } from './constants.js';
+import { STORAGE_KEYS, EXTENSION_CONFIG } from './constants.js';
 
 // Get stored language preference
 export async function getStoredLanguage() {
   try {
     if (!chrome.runtime?.id) {
       console.warn('Extension context invalidated');
-      return 'si'; // Default to Sinhala
+      return EXTENSION_CONFIG.DEFAULT_LANGUAGE;
     }
 
     const result = await chrome.storage.sync.get(STORAGE_KEYS.TARGET_LANGUAGE);
-    return result[STORAGE_KEYS.TARGET_LANGUAGE] || 'si'; // Default to Sinhala
+    const storedLanguage = result[STORAGE_KEYS.TARGET_LANGUAGE];
+    return EXTENSION_CONFIG.SUPPORTED_LANGUAGES.includes(storedLanguage)
+      ? storedLanguage
+      : EXTENSION_CONFIG.DEFAULT_LANGUAGE;
   } catch (error) {
     console.warn('Could not access storage:', error);
-    return 'si'; // Default to Sinhala
+    return EXTENSION_CONFIG.DEFAULT_LANGUAGE;
   }
 }
 
@@ -22,6 +25,11 @@ export async function setStoredLanguage(language) {
   try {
     if (!chrome.runtime?.id) {
       console.warn('Extension context invalidated');
+      return false;
+    }
+
+    if (!EXTENSION_CONFIG.SUPPORTED_LANGUAGES.includes(language)) {
+      console.warn('Unsupported target language:', language);
       return false;
     }
 
