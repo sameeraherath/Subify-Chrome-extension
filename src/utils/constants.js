@@ -1,16 +1,12 @@
 // Constants used throughout the extension
 export const EXTENSION_CONFIG = {
   NAME: 'Subify',
-  VERSION: '1.0.1',
+  VERSION: '1.1.0',
   DEFAULT_LANGUAGE: 'si',
   SUPPORTED_LANGUAGES: [
     'fr', 'es', 'de', 'si', 'ar', 'zh-CN', 'zh-TW',
-    'ja', 'ko', 'ru', 'pt', 'it', 'nl', 'sv', 'pl', 'tr', 'vi'
-  ],
-  CURRENTLY_SUPPORTED: ['si'], // Only Sinhala in v1.0
-  COMING_SOON_LANGUAGES: [
-    'fr', 'es', 'de', 'ar', 'zh-CN', 'zh-TW',
-    'ja', 'ko', 'ru', 'pt', 'it', 'nl', 'sv', 'pl', 'tr', 'vi'
+    'ja', 'ko', 'ru', 'pt', 'it', 'nl', 'sv', 'pl', 'tr', 'vi',
+    'hi', 'bn', 'id', 'th', 'he', 'uk'
   ]
 };
 
@@ -53,5 +49,11 @@ export const LANGUAGE_NAMES = {
   'sv': 'Swedish',
   'pl': 'Polish',
   'tr': 'Turkish',
-  'vi': 'Vietnamese'
+  'vi': 'Vietnamese',
+  'hi': 'Hindi',
+  'bn': 'Bengali',
+  'id': 'Indonesian',
+  'th': 'Thai',
+  'he': 'Hebrew',
+  'uk': 'Ukrainian'
 };

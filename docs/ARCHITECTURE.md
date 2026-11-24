@@ -652,6 +652,6 @@ const observer = new MutationObserver(mutations => {
 
 ---
 
-**Document Version**: 1.0.0
-**Last Updated**: December 2024
+**Document Version**: 1.1.0
+**Last Updated**: November 2026
 **Author**: Development Team

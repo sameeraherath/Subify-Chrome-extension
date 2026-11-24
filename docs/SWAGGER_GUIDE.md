@@ -195,7 +195,7 @@ openapi: 3.0.3
 info:
   title: YouTube Subtitle Translator API Documentation
   description: MyMemory Translation API integration
-  version: 1.0.0
+  version: 1.1.0
 
 paths:
   /get:

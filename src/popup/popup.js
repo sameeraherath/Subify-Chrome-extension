@@ -1,5 +1,5 @@
 // Import utilities
-import { LANGUAGE_NAMES, EXTENSION_CONFIG } from '../utils/constants.js';
+import { EXTENSION_CONFIG } from '../utils/constants.js';
 import { getStoredLanguage, setStoredLanguage } from '../utils/storage.js';
 
 // Function to initialize the language dropdown with the stored language
@@ -12,128 +12,32 @@ async function initializeDropdown() {
 
     // Add visual feedback when language changes
     langSelect.addEventListener('change', async (event) => {
-        const selectedLang = event.target.value;
+      const selectedLang = event.target.value;
 
-        // Check if user selected a language other than Sinhala
-        if (!EXTENSION_CONFIG.CURRENTLY_SUPPORTED.includes(selectedLang)) {
-            showComingSoonToast(selectedLang);
-            // Reset to Sinhala
-            langSelect.value = EXTENSION_CONFIG.DEFAULT_LANGUAGE;
-            return;
-        }
+      // Only accept languages advertised by the extension
+      if (!EXTENSION_CONFIG.SUPPORTED_LANGUAGES.includes(selectedLang)) {
+        langSelect.value = await getStoredLanguage();
+        return;
+      }
 
-        // Save the language preference
-        const saveResult = await setStoredLanguage(selectedLang);
-        if (saveResult) {
-            console.log('Language preference updated successfully');
-        } else {
-            console.error('Failed to save language preference');
-        }
+      // Save the language preference
+      const saveResult = await setStoredLanguage(selectedLang);
+      if (saveResult) {
+        console.log('Language preference updated successfully');
+      } else {
+        console.error('Failed to save language preference');
+      }
 
-        // Add a subtle animation to the select element
-        langSelect.style.transform = 'scale(1.02)';
-        setTimeout(() => {
-            langSelect.style.transform = 'scale(1)';
-        }, 150);
+      // Add a subtle animation to the select element
+      langSelect.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        langSelect.style.transform = 'scale(1)';
+      }, 150);
     });
   } catch (error) {
     console.error('Error initializing dropdown:', error);
   }
 }
-
-// Show coming soon toast message
-function showComingSoonToast(selectedLang) {
-  // Create toast element
-  const toast = document.createElement('div');
-  toast.className = 'coming-soon-toast';
-  toast.innerHTML = `
-    <div class="toast-content">
-      <div class="toast-text">
-        <div class="toast-title">Coming Soon!</div>
-        <div class="toast-message">${getLanguageName(selectedLang)} translation will be available in the next version</div>
-      </div>
-    </div>
-  `;
-
-  // Add toast styles - improved responsive design
-  toast.style.cssText = `
-    position: fixed;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-    color: white;
-    padding: 14px 18px;
-    border-radius: 10px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
-    z-index: 10000;
-    opacity: 0;
-    transform: translateX(-50%) translateY(-30px);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    max-width: calc(100vw - 40px);
-    width: 280px;
-    text-align: center;
-    backdrop-filter: blur(10px);
-  `;
-
-  // Add content styles
-  const toastContent = toast.querySelector('.toast-content');
-  toastContent.style.cssText = `
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  `;
-
-  const toastText = toast.querySelector('.toast-text');
-  toastText.style.cssText = `
-    width: 100%;
-  `;
-
-  const toastTitle = toast.querySelector('.toast-title');
-  toastTitle.style.cssText = `
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 4px;
-    color: #4ade80;
-    line-height: 1.2;
-  `;
-
-  const toastMessage = toast.querySelector('.toast-message');
-  toastMessage.style.cssText = `
-    font-size: 13px;
-    opacity: 0.85;
-    line-height: 1.4;
-    word-wrap: break-word;
-    hyphens: auto;
-  `;
-
-  document.body.appendChild(toast);
-
-  // Animate in with improved easing
-  requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateX(-50%) translateY(0)';
-  });
-
-  // Remove after 4.5 seconds with improved timing
-  setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(-50%) translateY(-30px)';
-      setTimeout(() => {
-          if (toast.parentNode) {
-              toast.parentNode.removeChild(toast);
-          }
-      }, 400);
-  }, 4500);
-}
-
-// Get language name from language code
-function getLanguageName(langCode) {
-  return LANGUAGE_NAMES[langCode] || langCode;
-}
-
 
 // Enhanced status indicator
 function updateStatusIndicator() {
@@ -142,22 +46,22 @@ function updateStatusIndicator() {
 
   // Check if extension context is valid
   if (chrome.runtime?.id) {
-      statusDot.style.background = '#4ade80';
-      statusText.textContent = 'Extension Active';
+    statusDot.style.background = '#4ade80';
+    statusText.textContent = 'Extension Active';
   } else {
-      statusDot.style.background = '#f87171';
-      statusText.textContent = 'Extension Inactive';
+    statusDot.style.background = '#f87171';
+    statusText.textContent = 'Extension Inactive';
   }
 }
 
 // Keyboard shortcuts
 function setupKeyboardShortcuts() {
   document.addEventListener('keydown', (event) => {
-      if (event.ctrlKey && event.key === 's') {
-          event.preventDefault();
-          const langSelect = document.getElementById('lang-select');
-          langSelect.focus();
-      }
+    if (event.ctrlKey && event.key === 's') {
+      event.preventDefault();
+      const langSelect = document.getElementById('lang-select');
+      langSelect.focus();
+    }
   });
 }
 
@@ -167,23 +71,23 @@ function addInteractiveEffects() {
 
   // Add focus effect
   langSelect.addEventListener('focus', () => {
-      langSelect.style.transform = 'scale(1.02)';
-      langSelect.style.boxShadow = '0 0 0 3px rgba(255, 255, 255, 0.3)';
+    langSelect.style.transform = 'scale(1.02)';
+    langSelect.style.boxShadow = '0 0 0 3px rgba(255, 255, 255, 0.3)';
   });
 
   // Remove focus effect
   langSelect.addEventListener('blur', () => {
-      langSelect.style.transform = 'scale(1)';
-      langSelect.style.boxShadow = 'none';
+    langSelect.style.transform = 'scale(1)';
+    langSelect.style.boxShadow = 'none';
   });
 
   // Add click effect
   langSelect.addEventListener('mousedown', () => {
-      langSelect.style.transform = 'scale(0.98)';
+    langSelect.style.transform = 'scale(0.98)';
   });
 
   langSelect.addEventListener('mouseup', () => {
-      langSelect.style.transform = 'scale(1.02)';
+    langSelect.style.transform = 'scale(1.02)';
   });
 }
 
@@ -214,27 +118,27 @@ function setupPrivacyAndLinks() {
   // Privacy policy button
   const privacyBtn = document.getElementById('privacy-details');
   if (privacyBtn) {
-      privacyBtn.addEventListener('click', () => {
-          showPrivacyModal();
-      });
+    privacyBtn.addEventListener('click', () => {
+      showPrivacyModal();
+    });
   }
 
   // GitHub link
   const githubLink = document.getElementById('github-link');
   if (githubLink) {
-      githubLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          chrome.tabs.create({ url: 'https://github.com/sameeraherath' });
-      });
+    githubLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: 'https://github.com/sameeraherath' });
+    });
   }
 
   // Support link
   const supportLink = document.getElementById('support-link');
   if (supportLink) {
-      supportLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          chrome.tabs.create({ url: 'https://github.com/sameeraherath/subify-chrome-extension' });
-      });
+    supportLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: 'https://github.com/sameeraherath/subify-chrome-extension' });
+    });
   }
 }
 
@@ -310,22 +214,22 @@ function showPrivacyModal() {
   // Close modal functionality
   const closeBtn = modalContent.querySelector('#close-modal');
   closeBtn.addEventListener('click', () => {
-      document.body.removeChild(modal);
+    document.body.removeChild(modal);
   });
 
   // Close on overlay click
   modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-          document.body.removeChild(modal);
-      }
+    if (e.target === modal) {
+      document.body.removeChild(modal);
+    }
   });
 
   // Close on Escape key
   const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-          document.body.removeChild(modal);
-          document.removeEventListener('keydown', handleEscape);
-      }
+    if (e.key === 'Escape') {
+      document.body.removeChild(modal);
+      document.removeEventListener('keydown', handleEscape);
+    }
   };
   document.addEventListener('keydown', handleEscape);
 }
