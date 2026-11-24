@@ -25,6 +25,11 @@ export const API_CONFIG = {
   RETRY_ATTEMPTS: 3
 };
 
+// Message types exchanged between the content script and the background worker
+export const MESSAGE_TYPES = {
+  TRANSLATE: 'SUBIFY_TRANSLATE'
+};
+
 export const STORAGE_KEYS = {
   TARGET_LANGUAGE: 'targetLang',
   USER_PREFERENCES: 'userPreferences',
