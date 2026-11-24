@@ -12,27 +12,27 @@ async function initializeDropdown() {
 
     // Add visual feedback when language changes
     langSelect.addEventListener('change', async (event) => {
-        const selectedLang = event.target.value;
+      const selectedLang = event.target.value;
 
-        // Only accept languages advertised by the extension
-        if (!EXTENSION_CONFIG.SUPPORTED_LANGUAGES.includes(selectedLang)) {
-            langSelect.value = await getStoredLanguage();
-            return;
-        }
+      // Only accept languages advertised by the extension
+      if (!EXTENSION_CONFIG.SUPPORTED_LANGUAGES.includes(selectedLang)) {
+        langSelect.value = await getStoredLanguage();
+        return;
+      }
 
-        // Save the language preference
-        const saveResult = await setStoredLanguage(selectedLang);
-        if (saveResult) {
-            console.log('Language preference updated successfully');
-        } else {
-            console.error('Failed to save language preference');
-        }
+      // Save the language preference
+      const saveResult = await setStoredLanguage(selectedLang);
+      if (saveResult) {
+        console.log('Language preference updated successfully');
+      } else {
+        console.error('Failed to save language preference');
+      }
 
-        // Add a subtle animation to the select element
-        langSelect.style.transform = 'scale(1.02)';
-        setTimeout(() => {
-            langSelect.style.transform = 'scale(1)';
-        }, 150);
+      // Add a subtle animation to the select element
+      langSelect.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        langSelect.style.transform = 'scale(1)';
+      }, 150);
     });
   } catch (error) {
     console.error('Error initializing dropdown:', error);
@@ -46,22 +46,22 @@ function updateStatusIndicator() {
 
   // Check if extension context is valid
   if (chrome.runtime?.id) {
-      statusDot.style.background = '#4ade80';
-      statusText.textContent = 'Extension Active';
+    statusDot.style.background = '#4ade80';
+    statusText.textContent = 'Extension Active';
   } else {
-      statusDot.style.background = '#f87171';
-      statusText.textContent = 'Extension Inactive';
+    statusDot.style.background = '#f87171';
+    statusText.textContent = 'Extension Inactive';
   }
 }
 
 // Keyboard shortcuts
 function setupKeyboardShortcuts() {
   document.addEventListener('keydown', (event) => {
-      if (event.ctrlKey && event.key === 's') {
-          event.preventDefault();
-          const langSelect = document.getElementById('lang-select');
-          langSelect.focus();
-      }
+    if (event.ctrlKey && event.key === 's') {
+      event.preventDefault();
+      const langSelect = document.getElementById('lang-select');
+      langSelect.focus();
+    }
   });
 }
 
@@ -71,23 +71,23 @@ function addInteractiveEffects() {
 
   // Add focus effect
   langSelect.addEventListener('focus', () => {
-      langSelect.style.transform = 'scale(1.02)';
-      langSelect.style.boxShadow = '0 0 0 3px rgba(255, 255, 255, 0.3)';
+    langSelect.style.transform = 'scale(1.02)';
+    langSelect.style.boxShadow = '0 0 0 3px rgba(255, 255, 255, 0.3)';
   });
 
   // Remove focus effect
   langSelect.addEventListener('blur', () => {
-      langSelect.style.transform = 'scale(1)';
-      langSelect.style.boxShadow = 'none';
+    langSelect.style.transform = 'scale(1)';
+    langSelect.style.boxShadow = 'none';
   });
 
   // Add click effect
   langSelect.addEventListener('mousedown', () => {
-      langSelect.style.transform = 'scale(0.98)';
+    langSelect.style.transform = 'scale(0.98)';
   });
 
   langSelect.addEventListener('mouseup', () => {
-      langSelect.style.transform = 'scale(1.02)';
+    langSelect.style.transform = 'scale(1.02)';
   });
 }
 
@@ -118,27 +118,27 @@ function setupPrivacyAndLinks() {
   // Privacy policy button
   const privacyBtn = document.getElementById('privacy-details');
   if (privacyBtn) {
-      privacyBtn.addEventListener('click', () => {
-          showPrivacyModal();
-      });
+    privacyBtn.addEventListener('click', () => {
+      showPrivacyModal();
+    });
   }
 
   // GitHub link
   const githubLink = document.getElementById('github-link');
   if (githubLink) {
-      githubLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          chrome.tabs.create({ url: 'https://github.com/sameeraherath' });
-      });
+    githubLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: 'https://github.com/sameeraherath' });
+    });
   }
 
   // Support link
   const supportLink = document.getElementById('support-link');
   if (supportLink) {
-      supportLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          chrome.tabs.create({ url: 'https://github.com/sameeraherath/subify-chrome-extension' });
-      });
+    supportLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: 'https://github.com/sameeraherath/subify-chrome-extension' });
+    });
   }
 }
 
@@ -214,22 +214,22 @@ function showPrivacyModal() {
   // Close modal functionality
   const closeBtn = modalContent.querySelector('#close-modal');
   closeBtn.addEventListener('click', () => {
-      document.body.removeChild(modal);
+    document.body.removeChild(modal);
   });
 
   // Close on overlay click
   modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-          document.body.removeChild(modal);
-      }
+    if (e.target === modal) {
+      document.body.removeChild(modal);
+    }
   });
 
   // Close on Escape key
   const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-          document.body.removeChild(modal);
-          document.removeEventListener('keydown', handleEscape);
-      }
+    if (e.key === 'Escape') {
+      document.body.removeChild(modal);
+      document.removeEventListener('keydown', handleEscape);
+    }
   };
   document.addEventListener('keydown', handleEscape);
 }
